@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        Log.d("VLADIMIR", "activity: $first")
+        Log.e("MainActivity", first)
 
         binding = ActivityBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)

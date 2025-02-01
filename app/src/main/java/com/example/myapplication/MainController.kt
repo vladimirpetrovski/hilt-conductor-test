@@ -23,7 +23,7 @@ class MainController(args: Bundle?) : BaseController(args) {
         savedViewState: Bundle?
     ): View {
         val binding = MainBinding.inflate(inflater, container, false)
-        Log.d("MainController", "$first AND $second")
+        Log.e("MainController", "$first AND $second")
         return binding.root
     }
 }
