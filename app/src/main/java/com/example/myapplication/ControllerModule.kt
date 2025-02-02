@@ -12,6 +12,13 @@ import javax.inject.Named
 object ControllerModule {
     @Provides
     @ControllerScoped
+    @Named("first")
+    fun textOne(): String = "Hello World"
+
+    @Provides
+    @ControllerScoped
     @Named("second")
-    fun second(): String = "Second"
+    fun textTwo(): String {
+        return "Hello Moon"
+    }
 }

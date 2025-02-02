@@ -21,4 +21,4 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class com.example.myapplication.MainController_Injector { *; }
--keep class com.example.myapplication.** { *; }
+-keep class com.funnydevs.hilt_conductor.** { *; }

@@ -10,6 +10,6 @@ import javax.inject.Named
 @InstallIn(SingletonComponent::class)
 object AppModule {
     @Provides
-    @Named("first")
-    fun first(): String = "First"
+    @Named("repository")
+    fun textRepository(): String = "Repo"
 }
