@@ -16,8 +16,8 @@ import javax.inject.Named
 class MainActivity : ComponentActivity() {
 
     @Inject
-    @Named("first")
-    lateinit var first: String
+    @Named("repository")
+    lateinit var repository: String
 
     private lateinit var binding: ActivityBinding
 
@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.e("MainActivity", first)
+        Log.e("MainActivity", repository)
 
         binding = ActivityBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
