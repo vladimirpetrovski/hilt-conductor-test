@@ -1,7 +1,7 @@
-package com.example.myapplication
+package com.example.myapplication.demo
 
-import com.funnydevs.hilt_conductor.ControllerComponent
-import com.funnydevs.hilt_conductor.annotations.ControllerScoped
+import com.example.annotations.ControllerScoped
+import com.example.library.ControllerComponent
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,12 +13,12 @@ object ControllerModule {
     @Provides
     @ControllerScoped
     @Named("first")
-    fun textOne(): String = "Hello World"
+    fun textOne(): String = "First"
 
     @Provides
     @ControllerScoped
     @Named("second")
     fun textTwo(): String {
-        return "Hello Moon"
+        return "Second"
     }
 }

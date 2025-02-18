@@ -1,21 +1,18 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kapt)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
 }
 
 android {
-    namespace = "com.example.myapplication.demo"
+    namespace = "com.example.library"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.myapplication"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -34,19 +31,13 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    buildFeatures {
-        viewBinding = true
-    }
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
+    api(project(":annotations"))
 
     implementation(libs.conductor)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
-
-    implementation(project(":library"))
-    ksp(project(":processor"))
 }

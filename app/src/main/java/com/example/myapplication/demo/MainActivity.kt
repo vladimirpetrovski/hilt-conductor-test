@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.demo
 
 import android.os.Bundle
 import android.util.Log
@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import com.bluelinelabs.conductor.Conductor.attachRouter
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.example.myapplication.databinding.ActivityBinding
+import com.example.myapplication.demo.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import javax.inject.Named
@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
     @Named("repository")
     lateinit var repository: String
 
-    private lateinit var binding: ActivityBinding
+    private lateinit var binding: ActivityMainBinding
 
     private lateinit var mainRouter: Router
 
@@ -28,10 +28,10 @@ class MainActivity : ComponentActivity() {
 
         Log.e("MainActivity", repository)
 
-        binding = ActivityBinding.inflate(LayoutInflater.from(this))
+        binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
         mainRouter = attachRouter(this, binding.controllerContainer, savedInstanceState)
-        mainRouter.setRoot(RouterTransaction.with(MainController(null)))
+        mainRouter.setRoot(RouterTransaction.with(MainController()))
     }
 }
