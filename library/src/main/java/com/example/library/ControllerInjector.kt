@@ -5,12 +5,13 @@ import com.bluelinelabs.conductor.Controller
 object ControllerInjector {
     fun inject(controller: Controller) {
         val className = controller::class.java.simpleName + "HiltInjection"
-        println("Looking for class: com.example.myapplication.demo.$className") // Debugging
+        val packageName = controller::class.java.`package`.name
+        println("Looking for class: $packageName.$className") // Debugging
 
         try {
             // Load the class dynamically
             val clazz = Class.forName(
-                "com.example.myapplication.demo.$className",
+                "$packageName.$className",
                 true,
                 controller.javaClass.classLoader
             )
