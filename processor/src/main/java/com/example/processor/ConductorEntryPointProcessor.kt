@@ -16,8 +16,6 @@ import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 
@@ -129,27 +127,22 @@ class ConductorEntryPointProcessor(
                     TypeSpec.classBuilder(generatedUtilName)
                         .addType(
                             TypeSpec.companionObjectBuilder()
-                                .addProperty(
-                                    PropertySpec.builder("isInjected", Boolean::class)
-                                        .initializer("false")
-                                        .addModifiers(KModifier.PRIVATE)
-                                        .mutable(true) // Make it a var
-                                        .build()
-                                )
                                 .addFunction(
                                     FunSpec.builder("inject")
                                         .addAnnotation(JvmStatic::class)
-                                        .addParameter("controller", ClassName("com.bluelinelabs.conductor", "Controller"))
-                                        .addCode("""
-                                        synchronized(this) {
-                                            if (!isInjected) {
-                                                val componentManager = ControllerComponentManager(controller)
-                                                val generatedComponent = componentManager.generatedComponent()
-                                                (generatedComponent as ${className}_GeneratedInjector).inject$className(controller as $className)
-                                                isInjected = true
-                                            }
-                                        }
-                                    """.trimIndent())
+                                        .addParameter(
+                                            "controller",
+                                            ClassName("com.bluelinelabs.conductor", "Controller")
+                                        )
+                                        .returns(ClassName("com.example.library", "ControllerComponentManager"))
+                                        .addCode(
+                                            """
+                                            val componentManager = ControllerComponentManager(controller)
+                                            val generatedComponent = componentManager.generatedComponent()
+                                            (generatedComponent as ${className}_GeneratedInjector).inject$className(controller as $className)
+                                            return componentManager
+                                            """.trimIndent()
+                                        )
                                         .build()
                                 )
                                 .build()

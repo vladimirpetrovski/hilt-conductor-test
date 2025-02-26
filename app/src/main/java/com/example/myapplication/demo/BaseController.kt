@@ -1,20 +1,13 @@
 package com.example.myapplication.demo
 
-import android.content.Context
 import android.os.Bundle
-import com.bluelinelabs.conductor.Controller
-import com.example.library.ControllerInjector
+import com.example.library.ConductorController
 import javax.inject.Inject
 import javax.inject.Named
 
-abstract class BaseController(args: Bundle?) : Controller(args) {
+abstract class BaseController(args: Bundle?) : ConductorController(args) {
 
     @Inject
     @Named("first")
     lateinit var first: String
-
-    override fun onContextAvailable(context: Context) {
-        super.onContextAvailable(context)
-        ControllerInjector.inject(this)
-    }
 }

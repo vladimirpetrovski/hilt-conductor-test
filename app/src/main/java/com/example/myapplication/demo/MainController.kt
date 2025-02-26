@@ -7,11 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.annotations.ConductorEntryPoint
 import com.example.myapplication.demo.databinding.ControllerMainBinding
+import com.example.library.viewModels
 import javax.inject.Inject
 import javax.inject.Named
 
 @ConductorEntryPoint
 class MainController @JvmOverloads constructor(args: Bundle? = null) : BaseController(args) {
+
+    private val viewModel: MainViewModel by viewModels()
 
     @Inject
     @Named("second")
@@ -25,6 +28,7 @@ class MainController @JvmOverloads constructor(args: Bundle? = null) : BaseContr
     ): View {
         val binding = ControllerMainBinding.inflate(inflater, container, false)
         binding.tvTest.text = "$first $second"
+        viewModel.printUser()
         return binding.root
     }
 }

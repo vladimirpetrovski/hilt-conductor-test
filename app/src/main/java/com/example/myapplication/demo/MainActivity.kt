@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.activity.ComponentActivity
+import androidx.activity.viewModels
 import com.bluelinelabs.conductor.Conductor.attachRouter
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
@@ -11,9 +12,12 @@ import com.example.myapplication.demo.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.getValue
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: MainViewModel by viewModels()
 
     @Inject
     @Named("repository")
@@ -33,5 +37,7 @@ class MainActivity : ComponentActivity() {
 
         mainRouter = attachRouter(this, binding.controllerContainer, savedInstanceState)
         mainRouter.setRoot(RouterTransaction.with(MainController()))
+
+        viewModel.printUser()
     }
 }

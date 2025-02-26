@@ -41,6 +41,9 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.lifecycle.viewmodel.ktx)
 
     implementation(libs.conductor)
 
