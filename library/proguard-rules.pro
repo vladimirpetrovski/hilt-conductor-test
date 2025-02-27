@@ -1,0 +1,2 @@
+-keepnames class * extends com.bluelinelabs.conductor.Controller
+-keep class **.*HiltInjection { *; }
