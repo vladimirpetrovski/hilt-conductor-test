@@ -5,7 +5,6 @@ import com.bluelinelabs.conductor.Controller
 object ControllerInjector {
     fun inject(controller: Controller): ControllerComponentManager {
         val className = controller::class.java.name + "HiltInjection"
-        println("Looking for class: $className")
 
         try {
             // Load the class dynamically
@@ -14,7 +13,6 @@ object ControllerInjector {
                 true,
                 controller.javaClass.classLoader
             )
-            println("Found class: ${clazz.name}")
 
             // Look for the static inject function directly in the class
             val method = clazz.getDeclaredMethod("inject", Controller::class.java)
