@@ -19,11 +19,33 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 
+/**
+ * Symbol Processor for handling @ConductorEntryPoint annotations.
+ * This processor generates two key components:
+ * 1. **Generated Injector Interfaces** (`*_GeneratedInjector`) for annotated controllers.
+ * 2. **Injection Utility Classes** (`*HiltInjection`) to handle dependency injection dynamically.
+ *
+ * **Purpose:**
+ * - Integrates Hilt with Conductor by generating necessary components.
+ * - Ensures controllers annotated with `@ConductorEntryPoint` can be injected properly.
+ * - Uses **KSP (Kotlin Symbol Processing API)** to generate Kotlin code during compilation.
+ *
+ * **Reference Implementation:**
+ * - Inspired by [Hilt's Dagger Integration](https://dagger.dev/hilt/)
+ */
 class ConductorEntryPointProcessor(
     private val codeGenerator: CodeGenerator,
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
+    /**
+     * Processes symbols annotated with `@ConductorEntryPoint`.
+     * - Validates symbols.
+     * - Generates necessary injector interfaces and injection utility classes.
+     *
+     * @param resolver Used to find annotated elements in the codebase.
+     * @return List of invalid symbols (if any).
+     */
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation(ConductorEntryPoint::class.qualifiedName!!)
         val ret = symbols.filter { !it.validate() }.toList()
@@ -34,6 +56,7 @@ class ConductorEntryPointProcessor(
                 it.accept(InjectionUtilVisitor(), Unit)
             }
 
+        // Log whether any symbols were found for debugging and maintenance
         if (symbols.count() == 0) {
             logger.warn("No symbols found with @ConductorEntryPoint annotation")
         } else {
@@ -43,6 +66,16 @@ class ConductorEntryPointProcessor(
         return ret
     }
 
+    /**
+     * Visitor that generates an injector interface for each annotated controller.
+     *
+     * **Example Output:**
+     * ```kotlin
+     * interface MyController_GeneratedInjector {
+     *     fun injectMyController(controller: MyController)
+     * }
+     * ```
+     */
     inner class ConductorEntryPointInterfaceVisitor : KSVisitorVoid() {
         override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
             logger.info("Visiting class: ${classDeclaration.qualifiedName?.asString()}")
@@ -71,7 +104,7 @@ class ConductorEntryPointProcessor(
                             AnnotationSpec.builder(ClassName("dagger.hilt", "InstallIn"))
                                 .addMember(
                                     "%T::class",
-                                    ClassName("com.example.library", "ControllerComponent")
+                                    ClassName("com.selabs.speak.library.conductor", "ControllerComponent")
                                 )
                                 .build()
                         )
@@ -89,7 +122,7 @@ class ConductorEntryPointProcessor(
                                 .build()
                         )
                         .addFunction(
-                            FunSpec.builder("inject${className}")
+                            FunSpec.builder("inject$className")
                                 .addParameter(
                                     className.decapitalize(),
                                     classDeclaration.toClassName()
@@ -100,6 +133,7 @@ class ConductorEntryPointProcessor(
                 )
                 .build()
 
+            // Generate file and write output
             val file = codeGenerator.createNewFile(
                 Dependencies(true, classDeclaration.containingFile!!),
                 packageName,
@@ -114,6 +148,19 @@ class ConductorEntryPointProcessor(
         }
     }
 
+    /**
+     * Visitor that generates a utility class to handle dependency injection.
+     *
+     * **Example Output:**
+     * ```kotlin
+     * class MyControllerHiltInjection {
+     *     companion object {
+     *         @JvmStatic
+     *         fun inject(controller: MyController): ControllerComponentManager { ... }
+     *     }
+     * }
+     * ```
+     */
     inner class InjectionUtilVisitor : KSVisitorVoid() {
         override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
             logger.info("Generating InjectionUtil for ${classDeclaration.qualifiedName?.asString()}")
@@ -122,7 +169,7 @@ class ConductorEntryPointProcessor(
             val generatedUtilName = "${className}HiltInjection"
 
             val fileSpec = FileSpec.builder(packageName, generatedUtilName)
-                .addImport("com.example.library", "ControllerComponentManager")
+                .addImport("com.selabs.speak.library.conductor", "ControllerComponentManager")
                 .addType(
                     TypeSpec.classBuilder(generatedUtilName)
                         .addType(
@@ -134,7 +181,7 @@ class ConductorEntryPointProcessor(
                                             "controller",
                                             ClassName("com.bluelinelabs.conductor", "Controller")
                                         )
-                                        .returns(ClassName("com.example.library", "ControllerComponentManager"))
+                                        .returns(ClassName("com.selabs.speak.library.conductor", "ControllerComponentManager"))
                                         .addCode(
                                             """
                                             val componentManager = ControllerComponentManager(controller)
@@ -151,6 +198,7 @@ class ConductorEntryPointProcessor(
                 )
                 .build()
 
+            // Generate file and write output
             val file = codeGenerator.createNewFile(
                 Dependencies(true, classDeclaration.containingFile!!),
                 packageName,
@@ -166,6 +214,10 @@ class ConductorEntryPointProcessor(
     }
 }
 
+/**
+ * Provides the `ConductorEntryPointProcessor` to the KSP environment.
+ * This class is required for the KSP framework to recognize and instantiate the processor.
+ */
 class ConductorEntryPointProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
         return ConductorEntryPointProcessor(environment.codeGenerator, environment.logger)
