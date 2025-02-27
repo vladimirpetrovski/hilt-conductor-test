@@ -30,9 +30,8 @@ import dagger.hilt.internal.GeneratedComponentManagerHolder
  *
  * @param args The arguments to be passed to the controller.
  */
-abstract class ConductorController(
-    private val args: Bundle?
-) : Controller(args),
+abstract class ConductorController @JvmOverloads constructor(private val args: Bundle? = null) :
+    Controller(args),
     ViewModelStoreOwner,
     HasDefaultViewModelProviderFactory,
     GeneratedComponentManagerHolder,
