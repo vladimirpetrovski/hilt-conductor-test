@@ -24,14 +24,17 @@ class ControllerComponentManager(
     }
 
     private fun createControllerComponent(): ControllerComponent {
+        val activity = controller.activity
+            ?: throw IllegalStateException("Controller must be attached to an activity")
+
         val controllerComponentBuilder =
             EntryPointAccessors.fromActivity(
-                controller.activity!!,
+                activity,
                 ControllerComponentEntryPoint::class.java
             )
 
         return controllerComponentBuilder.controllerComponentBuilder()
-            .activity(controller.activity!!)
+            .activity(activity)
             .controller(controller)
             .build()
     }
